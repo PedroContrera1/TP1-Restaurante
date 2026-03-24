@@ -2,6 +2,7 @@ package Entities;
 
 import Exceptions.PedidoException;
 import Exceptions.ValidationException;
+import Persistence.RegistroPedidos;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +12,12 @@ public class Pedido {
     private boolean confirmado;
     private Tarjeta tarjeta;
     private Propina propina;
+    private final RegistroPedidos registro;
 
-    public Pedido() {
+    public Pedido(RegistroPedidos registro) {
         this.items = new ArrayList<>();
         this.confirmado = false;
+        this.registro=registro;
     }
 
     public void agregarItem(Producto producto, int cantidad) {
@@ -98,7 +101,9 @@ public class Pedido {
 
     public double costoTotal() {
         validarPedidoConfirmado();
-        return totalConDescuento() + montoPropina();
+        double total=totalConDescuento() + montoPropina();
+        registro.guardarCosto(total);
+        return total;
     }
 
     public boolean estaConfirmado() {

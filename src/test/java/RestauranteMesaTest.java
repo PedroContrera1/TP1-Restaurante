@@ -8,6 +8,8 @@ import Entities.TipoProducto;
 import Entities.TipoTarjeta;
 import Exceptions.MesaException;
 import Exceptions.ValidationException;
+import Persistence.RegistroPedidoArchivo;
+import Persistence.RegistroPedidos;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -80,8 +82,9 @@ public class RestauranteMesaTest {
 
     @Test
     public void sePuedeAsignarPedidoAMesaOcupada() {
+        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Mesa mesa = new Mesa(1, 4);
-        Pedido pedido = new Pedido();
+        Pedido pedido = new Pedido(registro);
         mesa.ocupar(2);
 
         mesa.asignarPedido(pedido);
@@ -102,8 +105,9 @@ public class RestauranteMesaTest {
 
     @Test
     public void noSePuedeAsignarPedidoAMesaDesocupada() {
+    RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Mesa mesa = new Mesa(1, 4);
-        Pedido pedido = new Pedido();
+        Pedido pedido = new Pedido(registro);
 
         MesaException exception =
                 assertThrows(MesaException.class, () -> mesa.asignarPedido(pedido));
@@ -113,9 +117,10 @@ public class RestauranteMesaTest {
 
     @Test
     public void noSePuedeAsignarUnSegundoPedidoALaMesa() {
+        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Mesa mesa = new Mesa(1, 4);
-        Pedido pedido1 = new Pedido();
-        Pedido pedido2 = new Pedido();
+        Pedido pedido1 = new Pedido(registro);
+        Pedido pedido2 = new Pedido(registro);
         mesa.ocupar(2);
         mesa.asignarPedido(pedido1);
 
@@ -134,8 +139,10 @@ public class RestauranteMesaTest {
 
     @Test
     public void costoConsumidoConPedidoRetornaCostoTotalDelPedido() {
+        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Mesa mesa = new Mesa(1, 4);
-        Pedido pedido = new Pedido();
+        Pedido pedido1 = new Pedido(registro);
+        Pedido pedido = new Pedido(registro);
         pedido.agregarItem(new Producto("Agua", 1000, TipoProducto.BEBIDA), 2);
         pedido.agregarItem(new Producto("Hamburguesa", 5000, TipoProducto.PLATO_PRINCIPAL), 1);
         pedido.confirmar(new Tarjeta(TipoTarjeta.VISA), Propina.DOS_PORCIENTO);
