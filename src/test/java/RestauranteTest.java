@@ -6,7 +6,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RestauranteTest {
-    RegistroPedidos registro= new RegistroPedidoFake();
+    RegistroPedidos registro = monto -> {
+    };
     @Test
     public void calculoDeCostoConTarjetaVisa() {
         Producto agua = new Producto("Agua", 1000, TipoProducto.BEBIDA);

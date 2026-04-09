@@ -1,7 +1,7 @@
 package Entities;
 
 import Exceptions.NotFoundException;
-import Exceptions.ValidationException;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,32 +55,22 @@ public class Restaurante {
     }
 
     public Mesa buscarMesa(int numero) {
-        for (Mesa mesa : mesas) {
-            if (mesa.getNumero() == numero) {
-                return mesa;
-            }
-        }
-        throw new NotFoundException("No existe una mesa con ese número");
+        return mesas.stream()
+                .filter(mesa -> mesa.getNumero() == numero)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("No existe una mesa con ese número"));
     }
 
     public List<Mesa> mesasLibres() {
-        List<Mesa> libres = new ArrayList<>();
-        for (Mesa mesa : mesas) {
-            if (mesa.estaLibre()) {
-                libres.add(mesa);
-            }
-        }
-        return libres;
+        return mesas.stream()
+                .filter(Mesa::estaLibre)
+                .toList();
     }
 
     public List<Mesa> mesasOcupadas() {
-        List<Mesa> ocupadas = new ArrayList<>();
-        for (Mesa mesa : mesas) {
-            if (mesa.estaOcupada()) {
-                ocupadas.add(mesa);
-            }
-        }
-        return ocupadas;
+        return mesas.stream()
+                .filter(Mesa::estaOcupada)
+                .toList();
     }
 
     public void asignarPedidoAMesa(int numeroMesa, Pedido pedido) {
@@ -88,28 +78,18 @@ public class Restaurante {
     }
 
     public double totalFacturado() {
-        double total = 0;
-        for (Mesa mesa : mesas) {
-            total += mesa.costoConsumido();
-        }
-        return total;
+        return mesas.stream()
+                .mapToDouble(Mesa::costoConsumido)
+                .sum();
     }
 
     public Mesa buscarMesaDisponible(int cantidadComensales) {
-        validarCantidadComensales(cantidadComensales);
-
-        for (Mesa mesa : mesas) {
-            if (mesa.estaLibre() && mesa.puedeSentarse(cantidadComensales)) {
-                return mesa;
-            }
-        }
-
-        throw new IllegalStateException("No hay mesa disponible para esa cantidad de comensales");
+        return mesas.stream()
+                .filter(Mesa::estaLibre)
+                .filter(mesa -> mesa.puedeSentarse(cantidadComensales))
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No hay mesa disponible para esa cantidad de comensales"));
     }
 
-    private void validarCantidadComensales(int cantidadComensales) {
-        if (cantidadComensales <= 0) {
-            throw new ValidationException("La cantidad de comensales debe ser mayor a cero");
-        }
-    }
+
 }
