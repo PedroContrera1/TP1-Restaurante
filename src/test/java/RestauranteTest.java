@@ -1,16 +1,14 @@
 import Entities.*;
 
-import Persistence.RegistroPedidoArchivo;
 import Persistence.RegistroPedidos;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RestauranteTest {
-
+    RegistroPedidos registro= new RegistroPedidoFake();
     @Test
     public void calculoDeCostoConTarjetaVisa() {
-        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Producto agua = new Producto("Agua", 1000, TipoProducto.BEBIDA);
         Producto hamburguesa = new Producto("Hamburguesa", 5000, TipoProducto.PLATO_PRINCIPAL);
 
@@ -27,7 +25,6 @@ public class RestauranteTest {
 
     @Test
     public void calculoDeCostoConTarjetaMastercard() {
-        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Producto gaseosa = new Producto("Gaseosa", 1500, TipoProducto.BEBIDA);
         Producto pizza = new Producto("Pizza", 6000, TipoProducto.PLATO_PRINCIPAL);
 
@@ -42,7 +39,6 @@ public class RestauranteTest {
 
     @Test
     public void calculoDeCostoConTarjetaComarcaPlus() {
-        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Producto vino = new Producto("Vino", 4000, TipoProducto.BEBIDA);
         Producto pasta = new Producto("Pasta", 8000, TipoProducto.PLATO_PRINCIPAL);
 
@@ -57,7 +53,7 @@ public class RestauranteTest {
 
     @Test
     public void calculoDeCostoConTarjetaViedma() {
-        RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
+
         Producto cerveza = new Producto("Cerveza", 2000, TipoProducto.BEBIDA);
         Producto milanesa = new Producto("Milanesa", 7000, TipoProducto.PLATO_PRINCIPAL);
 
