@@ -1,15 +1,7 @@
-import Entities.Mesa;
-import Entities.Pedido;
-import Entities.Producto;
-import Entities.Propina;
-import Entities.Restaurante;
-import Entities.Tarjeta;
-import Entities.TipoProducto;
-import Entities.TipoTarjeta;
+import Entities.*;
 import Exceptions.MesaException;
 import Exceptions.ValidationException;
-import Persistence.RegistroPedidoArchivo;
-import Persistence.RegistroPedidos;
+import Persistence.*;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -167,5 +159,96 @@ public class RestauranteMesaTest {
         Mesa mesa = restaurante.buscarMesa(1);
 
         assertEquals(1, mesa.getNumero());
+    }
+    @Test
+    public void restauranteRetornaSoloMesasLibres() {
+        Restaurante restaurante = new Restaurante();
+
+        restaurante.buscarMesa(1).ocupar(2);
+        restaurante.buscarMesa(3).ocupar(4);
+
+        assertEquals(8, restaurante.mesasLibres().size());
+        assertTrue(restaurante.mesasLibres().stream().allMatch(Mesa::estaLibre));
+    }
+
+    @Test
+    public void restauranteRetornaSoloMesasOcupadas() {
+        Restaurante restaurante = new Restaurante();
+
+        restaurante.buscarMesa(1).ocupar(2);
+        restaurante.buscarMesa(3).ocupar(4);
+
+        assertEquals(2, restaurante.mesasOcupadas().size());
+        assertTrue(restaurante.mesasOcupadas().stream().allMatch(Mesa::estaOcupada));
+    }
+
+    @Test
+    public void restaurantePuedeAsignarPedidoAMesa() {
+        RegistroPedidos registro = new RegistroPedidoFake();
+        Restaurante restaurante = new Restaurante();
+        Pedido pedido = new Pedido(registro);
+
+        restaurante.buscarMesa(1).ocupar(2);
+        restaurante.asignarPedidoAMesa(1, pedido);
+
+        assertSame(pedido, restaurante.buscarMesa(1).getPedido());
+    }
+
+    @Test
+    public void totalFacturadoSumaElCostoConsumidoDeLasMesasOcupadasConPedido() {
+        RegistroPedidos registro = new RegistroPedidoFake();
+        Restaurante restaurante = new Restaurante();
+
+        Pedido pedido1 = new Pedido(registro);
+        pedido1.agregarItem(new Producto("Agua", 1000, TipoProducto.BEBIDA), 2);
+        pedido1.agregarItem(new Producto("Hamburguesa", 5000, TipoProducto.PLATO_PRINCIPAL), 1);
+        pedido1.confirmar(new Tarjeta(TipoTarjeta.VISA), Propina.DOS_PORCIENTO);
+
+        Pedido pedido2 = new Pedido(registro);
+        pedido2.agregarItem(new Producto("Gaseosa", 1500, TipoProducto.BEBIDA), 2);
+        pedido2.agregarItem(new Producto("Pizza", 6000, TipoProducto.PLATO_PRINCIPAL), 1);
+        pedido2.confirmar(new Tarjeta(TipoTarjeta.MASTERCARD), Propina.TRES_PORCIENTO);
+
+        restaurante.buscarMesa(1).ocupar(2);
+        restaurante.buscarMesa(2).ocupar(2);
+
+        restaurante.asignarPedidoAMesa(1, pedido1);
+        restaurante.asignarPedidoAMesa(2, pedido2);
+
+        assertEquals(16225.2, restaurante.totalFacturado(), 0.001);
+    }
+
+    @Test
+    public void buscarMesaDisponibleRetornaUnaMesaLibreQueSoportaLaCantidadDeComensales() {
+        Restaurante restaurante = new Restaurante();
+
+        restaurante.buscarMesa(1).ocupar(2);
+        restaurante.buscarMesa(2).ocupar(2);
+
+        Mesa mesaDisponible = restaurante.buscarMesaDisponible(4);
+
+        assertTrue(mesaDisponible.estaLibre());
+        assertTrue(mesaDisponible.puedeSentarse(4));
+        assertEquals(3, mesaDisponible.getNumero());
+    }
+
+    @Test
+    public void buscarMesaDisponibleLanzaExcepcionSiCantidadComensalesEsInvalida() {
+        Restaurante restaurante = new Restaurante();
+
+        ValidationException exception =
+                assertThrows(ValidationException.class, () -> restaurante.buscarMesaDisponible(0));
+
+        assertEquals("La cantidad de comensales debe ser mayor a cero", exception.getMessage());
+    }
+
+    @Test
+    public void buscarMesaDisponibleLanzaExcepcionSiNoHayMesaParaEsaCantidad() {
+        Restaurante restaurante = new Restaurante();
+
+        IllegalStateException exception =
+                assertThrows(IllegalStateException.class, () -> restaurante.buscarMesaDisponible(11));
+
+        assertEquals("No hay mesa disponible para esa cantidad de comensales", exception.getMessage());
     }
 }
