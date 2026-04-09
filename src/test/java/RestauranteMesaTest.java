@@ -1,11 +1,4 @@
-import Entities.Mesa;
-import Entities.Pedido;
-import Entities.Producto;
-import Entities.Propina;
-import Entities.Restaurante;
-import Entities.Tarjeta;
-import Entities.TipoProducto;
-import Entities.TipoTarjeta;
+import Entities.*;
 import Exceptions.MesaException;
 import Exceptions.ValidationException;
 import Persistence.RegistroPedidoArchivo;
@@ -141,7 +134,6 @@ public class RestauranteMesaTest {
     public void costoConsumidoConPedidoRetornaCostoTotalDelPedido() {
         RegistroPedidos registro=new RegistroPedidoArchivo("Registro_Costos.txt");
         Mesa mesa = new Mesa(1, 4);
-        Pedido pedido1 = new Pedido(registro);
         Pedido pedido = new Pedido(registro);
         pedido.agregarItem(new Producto("Agua", 1000, TipoProducto.BEBIDA), 2);
         pedido.agregarItem(new Producto("Hamburguesa", 5000, TipoProducto.PLATO_PRINCIPAL), 1);
