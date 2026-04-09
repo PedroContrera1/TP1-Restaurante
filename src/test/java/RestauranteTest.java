@@ -1,12 +1,11 @@
 import Entities.*;
 
-import Persistence.RegistroPedidos;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class RestauranteTest {
-    RegistroPedidos registro= new RegistroPedidoFake();
+    RegistroPedidoFakeBD registro= new RegistroPedidoFakeBD();
     @Test
     public void calculoDeCostoConTarjetaVisa() {
         Producto agua = new Producto("Agua", 1000, TipoProducto.BEBIDA);
@@ -21,6 +20,8 @@ public class RestauranteTest {
         assertEquals(5000, pedido.totalPlatos(), 0.001);
         assertEquals(60, pedido.descuento(), 0.001);
         assertEquals(7078.8, pedido.costoTotal(), 0.001);
+        assertTrue(registro.fueInvocado());
+        assertTrue(registro.getUltimoMontoGuardado() > 0);
     }
 
     @Test
@@ -35,6 +36,8 @@ public class RestauranteTest {
 
         assertEquals(120, pedido.descuento(), 0.001);
         assertEquals(9146.4, pedido.costoTotal(), 0.001);
+        assertTrue(registro.fueInvocado());
+        assertTrue(registro.getUltimoMontoGuardado() > 0);
     }
 
     @Test
@@ -49,6 +52,8 @@ public class RestauranteTest {
 
         assertEquals(240, pedido.descuento(), 0.001);
         assertEquals(12348, pedido.costoTotal(), 0.001);
+        assertTrue(registro.fueInvocado());
+        assertTrue(registro.getUltimoMontoGuardado() > 0);
     }
 
     @Test
@@ -64,6 +69,8 @@ public class RestauranteTest {
 
         assertEquals(0, pedido.descuento(), 0.001);
         assertEquals(9180, pedido.costoTotal(), 0.001);
+        assertTrue(registro.fueInvocado());
+        assertTrue(registro.getUltimoMontoGuardado() > 0);
     }
 
 
