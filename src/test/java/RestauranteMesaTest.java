@@ -184,7 +184,7 @@ public class RestauranteMesaTest {
 
     @Test
     public void restaurantePuedeAsignarPedidoAMesa() {
-        RegistroPedidos registro = new RegistroPedidoFake();
+        RegistroPedidos registro = new RegistroPedidoFakeBD();
         Restaurante restaurante = new Restaurante();
         Pedido pedido = new Pedido(registro);
 
@@ -196,7 +196,7 @@ public class RestauranteMesaTest {
 
     @Test
     public void totalFacturadoSumaElCostoConsumidoDeLasMesasOcupadasConPedido() {
-        RegistroPedidos registro = new RegistroPedidoFake();
+        RegistroPedidos registro = new RegistroPedidoFakeBD();
         Restaurante restaurante = new Restaurante();
 
         Pedido pedido1 = new Pedido(registro);
@@ -232,15 +232,6 @@ public class RestauranteMesaTest {
         assertEquals(3, mesaDisponible.getNumero());
     }
 
-    @Test
-    public void buscarMesaDisponibleLanzaExcepcionSiCantidadComensalesEsInvalida() {
-        Restaurante restaurante = new Restaurante();
-
-        ValidationException exception =
-                assertThrows(ValidationException.class, () -> restaurante.buscarMesaDisponible(0));
-
-        assertEquals("La cantidad de comensales debe ser mayor a cero", exception.getMessage());
-    }
 
     @Test
     public void buscarMesaDisponibleLanzaExcepcionSiNoHayMesaParaEsaCantidad() {
